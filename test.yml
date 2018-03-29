@@ -1,0 +1,18 @@
+---
+- hosts: switches
+  connection: local
+  vars:
+    cli:
+      host: ""
+      username: ""
+      password: ""
+
+  tasks:
+      - name: run show version
+        ios_command:
+          commands: "show version"
+          provider: ""
+        register: show_version
+
+      - name: print the show version output
+        debug: var=show_version
