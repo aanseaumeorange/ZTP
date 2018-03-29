@@ -2,11 +2,6 @@
 - hosts: switches
   gather_facts: no
   connection: local
-  vars:
-    cli:
-      host: ""
-      username: ""
-      password: ""
 
   tasks:
       - name: run show version
