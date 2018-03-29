@@ -3,8 +3,10 @@
   gather_facts: no
   connection: local
 
-  tasks:
-      - name: run show version
-        ios_command:
-          commands: "show version"
-          provider: ""
+ tasks:
+  - name: CONFIGURE LOOPBACK INTERFACE
+    ios_config:
+      lines:
+        - description Core Router LOOPBACK
+        - ipv4 address 10.1.1.1 255.255.255.255
+      parents: interface FastEthernet0/1
