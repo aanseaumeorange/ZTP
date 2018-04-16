@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*
 import telnetlib, sys, time, socket, os, subprocess
 from dhcp_service import *
+from python_query import *
 
 ## some variables
 line_break = "\r\n"
@@ -127,9 +128,9 @@ class TELNET(object):
 			tftp_server_addr, serial, line_break)
 			startup_config = "copy running-config startup-config%s" % line_break
 		elif (hp):
-			running_config = ("copy running-config tftp %s %s.cfg%s" %
+			running_config = ("copy tftp://%s/ %s.cfg running-config%s" %
 				tftp_server_addr, serial, line_break)
-			startup_config = "copy running-config startup-config%s" % line_break
+			startup_config = "write memory%s" % line_break
 		else:
 			running_config = ""
 			startup_config = ""
@@ -142,32 +143,22 @@ class TELNET(object):
 		conn.expect(ztp_phrase)
 		conn.write(line_break)
 
+	def image_update(self, conn):
+
 	def execute (self, router):
 		for conn in self.connections:
 			for device in self.device_names:
 				conn.write(line_break) #if executing more than one, line break will push device name again and next read_until wont get stuck
 				conn.read_until(device)
-				#conn.write("%s%s" % privileged_mode(), line_break)
-				#conn.expect(password_phrase)
-				#conn.write(login + line_break)
-				#time.sleep(1)
+
 				privileged_mode(conn)
 
 				serial = self.get_serial(conn)
 				print ("Serial number : %s" % serial)
 				install_config(conn, ser)
-				#conn.write("copy tftp://%s/ %s.cfg running-config%s" %
-				#	tftp_server_addr, serial, line_break)
-				#conn.expect(ztp_phrase)
-				#conn.write(line_break)
-				#
-				#conn.write("copy running-config startup-config%s" % line_break)
-				#conn.expect(ztp_phrase)
-				#conn.write(line_break)
-				#
+
 				time.sleep(10)
-				#catch_end_of_output = [device+" "+line_break, device+line_break]
-				#self.result_dictionary[router] = conn.expect(catch_end_of_output)[-1]
+
 	def close(self):
 		for conn in self.connections:
 			conn.close
