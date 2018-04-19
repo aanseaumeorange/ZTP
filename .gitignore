@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 /server/node_modules
+=======
+*.pyc
+>>>>>>> 48d02900fef5cea247c81311b0a9488053abe67c
