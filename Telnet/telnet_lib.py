@@ -143,7 +143,10 @@ class TELNET(object):
 		conn.expect(ztp_phrase)
 		conn.write(line_break)
 
-	def image_update(self, conn):
+	#def image_update(self, conn, image_name):
+	#	steps = []
+	#	if (cisco):
+	#		steps.append(f"copy tftp://{tftp_server_addr}/ {image_name} {image_name}{line_break}"
 
 	def execute (self, router):
 		for conn in self.connections:
@@ -162,6 +165,8 @@ class TELNET(object):
 	def close(self):
 		for conn in self.connections:
 			conn.close
+
+################################ Main ##########################################
 
 # Determine the vendor
 vendor = input ("Which constructor?\n 1 - Cisco\n 2 - HP\n 3 - Huawei\n")
