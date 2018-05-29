@@ -44,6 +44,9 @@ class Equipement(object):
             print ("Connection is closed: " + self.ip)
 
 
+    def check_ssh(self):
+        return self.connection is not None and self.connection.is_alive()
+
     # Enter enable mode
     # If no connection or connection has been lost, return an error
     # If already in enable mode do nothing
