@@ -22,17 +22,17 @@ class Equipement(object):
         self.username = username or ""
         self.password = password or ""
         self.secret = secret or ""
+        self.ready = False
 
     # Try to establish an SSH connection, return an error message if not possible
     def ssh_connect(self):
-        try:
-            self.connection = netmiko.ConnectHandler(ip=self.ip,
-                                                     device_type=self.device_type,
-                                                     username=self.username,
-                                                     password=self.password,
-                                                     secret=self.secret)
-        except:
-            raise EquipementError("Can't establish a connection to: " + self.ip)
+
+        self.connection = netmiko.ConnectHandler(ip=self.ip,
+                                                 device_type=self.device_type,
+                                                 username=self.username,
+                                                 password=self.password,
+                                                 secret=self.secret)
+
         print ("Connection to: " + self.ip)
 
     # Close the SSH conneciton if there is one

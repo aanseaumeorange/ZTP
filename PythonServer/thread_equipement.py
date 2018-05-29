@@ -7,6 +7,7 @@ class ThreadedEquipement(threading.Thread):
     # This equipement queue
     connection = None
     channel = None
+    callback_queue = None
 
     def __init__(self, equipement):
         threading.Thread.__init__(self)
@@ -14,11 +15,12 @@ class ThreadedEquipement(threading.Thread):
         #self.staging_channel = staging_channel
 
     #TODO remake connection with good credidential
+    #TODO connect to single queue for site
     def init_connection(self):
         self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='localhost'))
         self.channel = self.connection.channel()
         self.channel.queue_declare(queue=self.equipement.ip)
-
+        self.channel.basic_consume(self.callback, queue=self.equipement.ip, no_ack=True)
 
         print("Init thread channel for: " + self.equipement.ip)
 
@@ -41,7 +43,6 @@ class ThreadedEquipement(threading.Thread):
 
     def run(self):
         self.init_connection()
-        self.channel.basic_consume(self.callback, queue=self.equipement.ip, no_ack=True)
 
         self.handle_ssh("connect")
 
