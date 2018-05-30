@@ -2,6 +2,8 @@ import threading
 from random import randint
 from time import sleep
 import pika
+import subprocess
+import os
 
 class ThreadedEquipement(threading.Thread):
     # This equipement queue
@@ -31,6 +33,25 @@ class ThreadedEquipement(threading.Thread):
         elif (action == "close" and self.equipement.check_ssh()):
             self.equipement.ssh_close()
 
+    def ping(self):
+        pinged = False
+        nbr_try = 2
+        for i in range(1, nbr_try):
+            try:
+                subprocess.check_output(
+                    ['ping', '-c', '4', self.equipement.ip],
+                    stderr=subprocess.STDOUT, #get all output
+                    universal_newlines=True # return string not bytes
+                    )
+                pinged = True
+                print("Ping successful : " + self.equipement.ip)
+                break
+            except subprocess.CalledProcessError:
+                print("ping to {} failed tentative {}/{}".format(
+                    self.equipement.ip, i, nbr_try))
+                sleep(10)
+        return pinged
+
     def callback(self, channel, method, properties, body):
         print("Thread msg body: " + body)
         if (body == "close"):
@@ -42,6 +63,10 @@ class ThreadedEquipement(threading.Thread):
         print(result)
 
     def run(self):
+        if (not self.ping()):
+            print("Thread clossed unsuccessfuly, switch %s doesn't response"
+                % self.equipement.ip)
+            return
         self.init_connection()
 
         self.handle_ssh("connect")

@@ -78,10 +78,10 @@ def test_rabbit():
 
     connection.close()
 
-def stager(message):
+def stager(message_dhcp):
     # Get the first address and iterate until the last, use same variable
-    equipent_address = list(map(int, message["range_start"].split(".")))
-    range_end = equipent_address[3] + (int(message["nb_switch"]))
+    equipent_address = list(map(int, message_dhcp["range_start"].split(".")))
+    range_end = equipent_address[3] + (int(message_dhcp["nb_switch"]))
     equipement_list = []
 
     print(equipent_address)
@@ -89,28 +89,14 @@ def stager(message):
 
     while (equipent_address[3] < range_end):
         equipement_list.append(Equipement(".".join(map(str, equipent_address)),
-            message["constructor"], default_login, default_password, default_secret))
+            message_dhcp["constructor"], default_login, default_password, default_secret))
         equipent_address[3] += 1
 
     thread_pool = []
 
-    not_all_started = True
-
-    while (not_all_started):
-        not_all_started = False
-
-        for eq in equipement_list:
-            if (eq.ready):
-                continue
-
-            ping = os.system("ping -c 4 " + eq.ip)
-            if (ping == 0):
-                eq.ready = True
-                thread_pool.append(ThreadedEquipement(eq))
-                thread_pool[len(thread_pool) - 1].run()
-            else:
-                not_all_started = True
-                print(eq.ip + "hasn't started yet")
+    for eq in equipement_list:
+        thread_pool.append(ThreadedEquipement(eq))
+        thread_pool[len(thread_pool) - 1].start()
 
     return thread_pool
     print("end stager")
